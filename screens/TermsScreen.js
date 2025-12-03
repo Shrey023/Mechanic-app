@@ -21,14 +21,14 @@ export default function TermsScreen({ navigation, route }) {
       <Text style={styles.title}>Terms & Privacy Policy</Text>
 
       <Text style={styles.text}>
-        Welcome to MechTrix! By using our app, you agree to the following:
+        Welcome to Mechze! By using our app, you agree to the following:
         {"\n\n"}1. We connect customers with mechanics for on-demand services.
         {"\n\n"}2. Your data (location, name, phone, etc.) is used only to improve your experience and connect you to nearby mechanics/customers.
         {"\n\n"}3. We never sell your personal data to third parties.
         {"\n\n"}4. Mechanics and customers are responsible for conducting services safely and legally.
         {"\n\n"}5. By continuing, you consent to our Privacy Policy and agree to receive notifications related to your bookings.
         {"\n\n"}You can read the full Terms & Privacy Policy on our website at:
-        {"\n"}https://mechzy.com/legal or https://mechtrix.com/policy
+        {"\n"}https://mechze.com/policy 
       </Text>
 
       <TouchableOpacity
