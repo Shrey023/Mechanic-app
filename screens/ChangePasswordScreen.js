@@ -9,6 +9,7 @@ import {
   ActivityIndicator
 } from 'react-native';
 import { useTheme } from '../ThemeContext';
+import { API_BASE_URL } from '../config/api';
 import axios from 'axios';
 
 export default function ChangePasswordScreen({ route, navigation }) {
@@ -39,7 +40,7 @@ export default function ChangePasswordScreen({ route, navigation }) {
     try {
       // ✅ Correct API route: `/change-password` (not `/changeMechanicPassword`)
       const res = await axios.post(
-  'https://mechtrix.onrender.com/api/mechanic/change-password',
+  `${API_BASE_URL}/mechanic/change-password`,
   { currentPassword, newPassword },
   { headers: { Authorization: `Bearer ${mechanic.token}` } }
 );

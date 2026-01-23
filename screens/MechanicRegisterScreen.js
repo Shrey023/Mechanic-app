@@ -9,6 +9,7 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
+import { API_BASE_URL } from '../config/api';
 import { useTheme } from "../ThemeContext";
 import axios from "axios";
 import * as ImagePicker from "react-native-image-picker";
@@ -28,6 +29,9 @@ export default function MechanicRegisterScreen({ navigation }) {
     vehicleTypes: "",
     servicesOffered: "",
     serviceRadius: "",
+    includedDistanceKm: "",
+    baseVisitingCharge: "",
+    extraChargePerKm: "",
   });
 
   const [profileImage, setProfileImage] = useState(null);
@@ -90,11 +94,32 @@ export default function MechanicRegisterScreen({ navigation }) {
       vehicleTypes,
       servicesOffered,
       serviceRadius,
+      includedDistanceKm,
+      baseVisitingCharge,
+      extraChargePerKm,
     } = form;
 
     if (!name || !email || !password || !phone) {
       return Alert.alert("Error", "Please fill all required fields");
     }
+
+    // ✅ Pricing field validation
+    const includedDist = parseFloat(includedDistanceKm) || 0;
+    const baseCharge = parseFloat(baseVisitingCharge) || 0;
+    const extraCharge = parseFloat(extraChargePerKm) || 0;
+
+    if (baseCharge < 50 || baseCharge > 5000) {
+      return Alert.alert("Error", "Base visiting charge must be between ₹50 and ₹5000");
+    }
+
+    if (includedDist < 0 || includedDist > 100) {
+      return Alert.alert("Error", "Included distance must be between 0 and 100 km");
+    }
+
+    if (extraCharge < 5 || extraCharge > 500) {
+      return Alert.alert("Error", "Extra charge per km must be between ₹5 and ₹500");
+    }
+
     if (!location) {
       return Alert.alert("Error", "Please fetch your location first");
     }
@@ -109,6 +134,11 @@ export default function MechanicRegisterScreen({ navigation }) {
       formData.append("phone", phone);
       formData.append("experienceYears", experienceYears);
       formData.append("serviceRadius", serviceRadius);
+
+      // ✅ Append pricing fields
+      formData.append("includedDistanceKm", includedDist);
+      formData.append("baseVisitingCharge", baseCharge);
+      formData.append("extraChargePerKm", extraCharge);
 
       // ✅ Split comma-separated lists
       vehicleTypes
@@ -143,7 +173,7 @@ export default function MechanicRegisterScreen({ navigation }) {
       });
 
       const res = await axios.post(
-        "https://mechtrix.onrender.com/api/auth/mechanic/register",
+        `${API_BASE_URL}/auth/mechanic/register`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -179,11 +209,15 @@ export default function MechanicRegisterScreen({ navigation }) {
         { label: "Vehicle Types (comma-separated)", key: "vehicleTypes" },
         { label: "Services Offered (comma-separated)", key: "servicesOffered" },
         { label: "Service Radius (km)", key: "serviceRadius" },
+        { label: "Base Visiting Charge (₹)", key: "baseVisitingCharge", keyboardType: "decimal-pad" },
+        { label: "Included Distance (km)", key: "includedDistanceKm", keyboardType: "decimal-pad" },
+        { label: "Extra Charge Per Km (₹)", key: "extraChargePerKm", keyboardType: "decimal-pad" },
       ].map((field) => (
         <TextInput
           key={field.key}
           placeholder={field.label}
           secureTextEntry={field.secure}
+          keyboardType={field.keyboardType || "default"}
           placeholderTextColor={isDark ? "#aaa" : "#888"}
           value={form[field.key]}
           onChangeText={(val) => handleChange(field.key, val)}

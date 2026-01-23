@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { API_BASE_URL } from '../config/api';
 import {
   View,
   Text,
@@ -17,6 +18,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../ThemeContext";
+import { useAuth } from "../AuthContext";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -24,11 +26,12 @@ export default function LoginScreen({ navigation }) {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
+  const { login } = useAuth();
 
   const handleLogin = async () => {
     try {
       const res = await axios.post(
-        "https://mechtrix.onrender.com/api/auth/mechanic/login",
+        `${API_BASE_URL}/auth/mechanic/login`,
         { email, password }
       );
       const data = res.data || {};
@@ -43,6 +46,7 @@ export default function LoginScreen({ navigation }) {
       };
 
       await AsyncStorage.setItem("mechanic", JSON.stringify(mechanicData));
+      await login(mechanicData);
 
       Alert.alert(t("Success"), t("Welcome"));
 

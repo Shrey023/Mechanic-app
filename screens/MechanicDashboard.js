@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import { API_BASE_URL } from '../config/api';
 import { useTranslation } from "react-i18next";
 import axios from "axios";
 import { useTheme } from "../ThemeContext";
@@ -52,7 +53,7 @@ export default function MechanicDashboard({ route, navigation }) {
       setLoading(true);
       const token = mechanic?.token;
       const res = await axios.get(
-        `https://mechtrix.onrender.com/api/bookings/mechanic/${mechanic._id}`,
+        `${API_BASE_URL}/bookings/mechanic/${mechanic._id}`,
         { headers: token ? { Authorization: `Bearer ${token}` } : {} }
       );
       const completed = (res.data || []).filter(
@@ -77,7 +78,7 @@ export default function MechanicDashboard({ route, navigation }) {
     try {
       const token = mechanic?.token;
       await axios.patch(
-        "https://mechtrix.onrender.com/api/mechanic/status",
+        `${API_BASE_URL}/mechanic/status`,
         { status: newStatus },
         { headers: token ? { Authorization: `Bearer ${token}` } : {} }
       );
@@ -107,7 +108,7 @@ export default function MechanicDashboard({ route, navigation }) {
         async (pos) => {
           try {
             await axios.post(
-              "https://mechtrix.onrender.com/api/location/update",
+              `${API_BASE_URL}/location/update`,
               { lat: pos.coords.latitude, lng: pos.coords.longitude },
               { headers: { Authorization: `Bearer ${mechanic.token}` } }
             );

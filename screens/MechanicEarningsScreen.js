@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,31 +6,48 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_BASE_URL } from '../config/api';
 import { useTheme } from '../ThemeContext';
 
 export default function MechanicEarningsScreen({ route }) {
   const { theme } = useTheme();
   const isDarkMode = theme === 'dark';
   const mechanic = route?.params?.mechanic;
-  const [selectedTab, setSelectedTab] = useState('Week');
+  const [platformFees, setPlatformFees] = useState(null);
+  const [platformFeesError, setPlatformFeesError] = useState(null);
+  const [platformFeesLoading, setPlatformFeesLoading] = useState(false);
 
-  const dummyData = [
-    { day: 'Mon', amount: 100 },
-    { day: 'Tue', amount: 120 },
-    { day: 'Wed', amount: 110 },
-    { day: 'Thu', amount: 130 },
-    { day: 'Fri', amount: 115 },
-    { day: 'Sat', amount: 105 },
-    { day: 'Sun', amount: 140 },
-  ];
+  useEffect(() => {
+    const fetchPlatformFees = async () => {
+      setPlatformFeesLoading(true);
+      setPlatformFeesError(null);
+      try {
+        const stored = await AsyncStorage.getItem('mechanic');
+        const mech = stored ? JSON.parse(stored) : null;
+        const token = mech?.token;
+        if (!token) {
+          throw new Error('Token missing');
+        }
+        const res = await axios.get(`${API_BASE_URL}/mechanic/platform-dues`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setPlatformFees({
+          totalUnpaidAmount: res.data?.totalUnpaidAmount ?? null,
+          unpaidTripCount: res.data?.unpaidTripCount ?? null,
+        });
+      } catch (err) {
+        console.error('Platform fees load failed:', err?.message || err);
+        setPlatformFees(null);
+        setPlatformFeesError('unavailable');
+      } finally {
+        setPlatformFeesLoading(false);
+      }
+    };
 
-  const recentPayments = [
-    { id: '1', amount: 120, service: 'Oil Change' },
-    { id: '2', amount: 350, service: 'Brake Repair' },
-    { id: '3', amount: 80, service: 'Tire Rotation' },
-  ];
-
-  const totalEarnings = dummyData.reduce((acc, d) => acc + d.amount, 0);
+    fetchPlatformFees();
+  }, []);
 
   return (
     <ScrollView
@@ -55,108 +72,39 @@ export default function MechanicEarningsScreen({ route }) {
         <Text
           style={[styles.totalAmount, { color: isDarkMode ? '#fff' : '#000' }]}
         >
-          ₹{totalEarnings}
+          Coming Soon
         </Text>
       </View>
 
+      <Text style={[styles.subHeading, { color: isDarkMode ? '#fff' : '#000' }]}>Platform Fees</Text>
       <View
         style={[
-          styles.toggleContainer,
-          { backgroundColor: isDarkMode ? '#222' : '#f3f3f3' },
+          styles.platformCard,
+          { backgroundColor: isDarkMode ? '#111' : '#F3F3F3' },
         ]}
       >
-        {['Week', 'Month'].map((tab) => (
-          <TouchableOpacity
-            key={tab}
-            style={[
-              styles.toggleButton,
-              selectedTab === tab && {
-                backgroundColor: isDarkMode ? '#444' : '#fff',
-                elevation: 2,
-              },
-            ]}
-            onPress={() => setSelectedTab(tab)}
-          >
-            <Text
-              style={[
-                styles.toggleText,
-                {
-                  color:
-                    selectedTab === tab
-                      ? isDarkMode
-                        ? '#fff'
-                        : '#000'
-                      : '#888',
-                  fontWeight: selectedTab === tab ? 'bold' : '500',
-                },
-              ]}
-            >
-              {tab}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+        <Text style={[styles.platformLabel, { color: isDarkMode ? '#ccc' : '#555' }]}>Total Due</Text>
+        <Text style={[styles.platformAmount, { color: isDarkMode ? '#fff' : '#000' }]}>₹{platformFees?.totalUnpaidAmount ?? '—'}</Text>
 
-      <Text
-        style={[styles.subHeading, { color: isDarkMode ? '#fff' : '#000' }]}
-      >
-        Earnings
-      </Text>
-      <View style={styles.graph}>
-        {dummyData.map((item) => (
-          <View key={item.day} style={styles.barContainer}>
-            <View
-              style={[
-                styles.bar,
-                {
-                  height: item.amount,
-                  backgroundColor: isDarkMode ? '#00BFFF' : '#000',
-                },
-              ]}
-            />
-            <Text style={{ color: isDarkMode ? '#ccc' : '#555', fontSize: 12 }}>
-              {item.day}
-            </Text>
-          </View>
-        ))}
-      </View>
-
-      <Text
-        style={[styles.subHeading, { color: isDarkMode ? '#fff' : '#000' }]}
-      >
-        Recent Payments
-      </Text>
-      {recentPayments.map((item) => (
-        <View
-          key={item.id}
-          style={[
-            styles.paymentItem,
-            { borderBottomColor: isDarkMode ? '#333' : '#eee' },
-          ]}
-        >
-          <View style={styles.paymentLeft}>
-            <Text
-              style={[
-                styles.paymentAmount,
-                { color: isDarkMode ? '#fff' : '#000' },
-              ]}
-            >
-              ₹{item.amount}
-            </Text>
-            <Text
-              style={[
-                styles.paymentService,
-                { color: isDarkMode ? '#aaa' : '#555' },
-              ]}
-            >
-              {item.service}
-            </Text>
-          </View>
-          <Text style={{ color: isDarkMode ? '#bbb' : '#444' }}>
-            Completed
+        <View style={styles.platformRow}>
+          <Text style={[styles.platformSubLabel, { color: isDarkMode ? '#aaa' : '#777' }]}>Unpaid Trips</Text>
+          <Text style={[styles.platformSubValue, { color: isDarkMode ? '#fff' : '#000' }]}>
+            {platformFees?.unpaidTripCount ?? '—'}
           </Text>
         </View>
-      ))}
+
+        <TouchableOpacity style={styles.payDisabled} disabled>
+          <Text style={styles.payDisabledText}>Pay Now (Coming Soon)</Text>
+        </TouchableOpacity>
+
+        {platformFeesLoading ? (
+          <Text style={[styles.platformHint, { color: isDarkMode ? '#888' : '#666' }]}>Loading platform fees…</Text>
+        ) : platformFeesError ? (
+          <Text style={[styles.platformHint, { color: isDarkMode ? '#888' : '#666' }]}>Platform fees unavailable</Text>
+        ) : (
+          <Text style={[styles.platformHint, { color: isDarkMode ? '#888' : '#666' }]}>Payment integration coming soon</Text>
+        )}
+      </View>
     </ScrollView>
   );
 }
@@ -230,5 +178,54 @@ const styles = StyleSheet.create({
   },
   paymentService: {
     fontSize: 14,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#ddd',
+    marginVertical: 20,
+  },
+  platformCard: {
+    padding: 16,
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  platformLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  platformAmount: {
+    fontSize: 28,
+    fontWeight: '700',
+    marginVertical: 8,
+  },
+  platformRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  platformSubLabel: {
+    fontSize: 14,
+  },
+  platformSubValue: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  payDisabled: {
+    backgroundColor: '#e0e0e0',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  payDisabledText: {
+    color: '#777',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  platformHint: {
+    fontSize: 12,
+    fontStyle: 'italic',
+    textAlign: 'center',
   },
 });

@@ -15,16 +15,21 @@ import {
   Entypo,
 } from '@expo/vector-icons';
 import { useTheme } from '../ThemeContext';
+import { useAuth } from '../AuthContext';
 
 export default function MechanicSettingsScreen({ navigation, route }) {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === 'dark';
   const mechanic = route?.params?.mechanic;
+  const { logout } = useAuth();
 
   const handleLogout = () => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Logout', onPress: () => navigation.navigate('Login') },
+      { text: 'Logout', onPress: async () => {
+        await logout('manual');
+        navigation.replace('Login');
+      } },
     ]);
   };
 
@@ -66,6 +71,14 @@ export default function MechanicSettingsScreen({ navigation, route }) {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Account</Text>
+
+        <TouchableOpacity
+          style={styles.option}
+          onPress={() => navigation.navigate('PlatformFees')}
+        >
+          <MaterialIcons name="receipt-long" size={20} color={styles.iconColor.color} />
+          <Text style={styles.optionText}>Platform Fees</Text>
+        </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.option}

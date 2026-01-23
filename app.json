@@ -1,37 +1,48 @@
 {
-  "cli": {
-    "version": ">= 3.13.1"
-  },
-  "build": {
-    "production": {
-      "distribution": "store",
-      "android": {
-        "buildType": "app-bundle"
+  "expo": {
+    "name": "Mechze - mechanic app",
+    "slug": "mechanic-app",
+    "experiments": {
+      "newArchEnabled": true
+    },
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "android": {
+      "package": "com.shrey_r.mechanicapp",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "REMOVED_GOOGLE_MAPS_KEY"
+        }
       }
     },
-    "preview": {
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      }
+    "plugins": [
+      "expo-audio",
+      "expo-font",
+      "expo-location",
+      "expo-asset"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "2cf8465e-7325-41f1-9a3c-ad245728971c"
+      },
+      "API_URL": "https://mechtrix.onrender.com/api",
+      "GOOGLE_MAPS_KEY": "REMOVED_GOOGLE_MAPS_KEY"
     },
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      }
-    }
-  },
-  "submit": {
-    "production": {}
-  },
-  "extra": {
-    "eas": {
-      "projectId": "2cf8465e-7325-41f1-9a3c-ad245728971c"
-    }
-  },
-  "android": {
-    "package": "com.shrey_r.mechanicapp"
+    "sdkVersion": "54.0.0"
   }
 }

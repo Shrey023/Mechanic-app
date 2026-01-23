@@ -9,6 +9,7 @@ import {
   Dimensions,
   RefreshControl,
 } from "react-native";
+import { API_BASE_URL } from '../config/api';
 import axios from "axios";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import { useTheme } from "../ThemeContext";
@@ -55,7 +56,7 @@ export default function MechanicBookingScreen({ route, navigation }) {
       setLoading(true);
       const token = mechanic?.token || (await AsyncStorage.getItem("mechanicToken"));
       const res = await axios.get(
-        `https://mechtrix.onrender.com/api/bookings/mechanic/${mechanic._id}`,
+        `${API_BASE_URL}/bookings/mechanic/${mechanic._id}`,
         { headers: token ? { Authorization: `Bearer ${token}` } : {} }
       );
       console.log("🔧 mechanic bookings:", res.data);
@@ -77,7 +78,7 @@ export default function MechanicBookingScreen({ route, navigation }) {
     try {
       const token = mechanic?.token;
       await axios.put(
-        `https://mechtrix.onrender.com/api/bookings/${bookingId}/respond`,
+        `${API_BASE_URL}/bookings/${bookingId}/respond`,
         { status: action },
         { headers: token ? { Authorization: `Bearer ${token}` } : {} }
       );

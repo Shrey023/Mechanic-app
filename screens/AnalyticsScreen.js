@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from "react-nat
 import axios from "axios";
 import { useTheme } from "../ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_BASE_URL } from '../config/api';
 
 export default function AnalyticsScreen() {
   const { theme } = useTheme();
@@ -24,7 +25,7 @@ export default function AnalyticsScreen() {
         if (!mechanic?._id) return;
 
         const res = await axios.get(
-          `https://mechtrix.onrender.com/api/bookings/mechanic/${mechanic._id}`
+          `${API_BASE_URL}/bookings/mechanic/${mechanic._id}`
         );
         const all = res.data || [];
         const completed = all.filter(b => b.status === "completed");

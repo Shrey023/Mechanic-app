@@ -9,6 +9,7 @@ import {
   Linking,
   ScrollView,
 } from 'react-native';
+import { API_BASE_URL, GOOGLE_MAPS_KEY } from '../config/api';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import * as Location from 'expo-location';
 import axios from 'axios';
@@ -62,7 +63,7 @@ export default function MechanicNavigateScreen({ route, navigation }) {
 
   const fetchRoute = async (startLat, startLng, endLat, endLng) => {
     try {
-      const apiKey = 'REMOVED_GOOGLE_MAPS_KEY';
+      const apiKey = GOOGLE_MAPS_KEY;
       const res = await axios.get(
         `https://maps.googleapis.com/maps/api/directions/json?origin=${startLat},${startLng}&destination=${endLat},${endLng}&key=${apiKey}`
       );
@@ -138,7 +139,7 @@ export default function MechanicNavigateScreen({ route, navigation }) {
             longitude: pos.coords.longitude,
           });
           await axios.post(
-            'https://mechtrix.onrender.com/api/location/update',
+            `${API_BASE_URL}/location/update`,
             { lat: pos.coords.latitude, lng: pos.coords.longitude },
             { headers: { Authorization: `Bearer ${mechanic.token}` } }
           );
@@ -195,7 +196,7 @@ export default function MechanicNavigateScreen({ route, navigation }) {
   const handleCompleteBooking = async () => {
     try {
       await axios.put(
-        `https://mechtrix.onrender.com/api/bookings/${booking._id}/respond`,
+        `${API_BASE_URL}/bookings/${booking._id}/respond`,
         { status: 'completed' }
       );
       Alert.alert('Success', 'Booking marked as completed!');

@@ -9,11 +9,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import io from "socket.io-client";
 import * as Notifications from "expo-notifications";
 import { Audio } from "expo-audio";
+import { API_BASE_URL } from './config/api';
 
 import "./i18n";
 import { I18nextProvider } from "react-i18next";
 import i18n from "./i18n";
 import { ThemeProvider, useTheme } from "./ThemeContext";
+import { AuthProvider } from "./AuthContext";
 
 // Screens
 import LoginScreen from "./screens/LoginScreen";
@@ -88,7 +90,7 @@ function AppWrapper() {
   const { theme } = useTheme();
 
   useEffect(() => {
-    const socket = io("https://mechtrix.onrender.com"); // ✅ Backend URL
+    const socket = io(API_BASE_URL.replace('/api', '')); // ✅ Backend URL
 
     socket.on("newBooking", async ({ mechanicId, booking }) => {
       // load mechanic from storage
@@ -122,10 +124,10 @@ function AppWrapper() {
 
   return (
     <NavigationContainer theme={theme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
+      <Stack.Navigator initialRouteName="AuthLoading" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Main" component={BottomTabs} />
-          <Stack.Screen name="AuthLoading" component={AuthLoadingScreen} />
+        <Stack.Screen name="AuthLoading" component={AuthLoadingScreen} />
         <Stack.Screen name="Navigate" component={MechanicNavigateScreen} />
         <Stack.Screen name="ChatScreen" component={ChatScreen} />
         <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
@@ -141,10 +143,12 @@ function AppWrapper() {
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <I18nextProvider i18n={i18n}>
-        <AppWrapper />
-      </I18nextProvider>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider>
+        <I18nextProvider i18n={i18n}>
+          <AppWrapper />
+        </I18nextProvider>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
