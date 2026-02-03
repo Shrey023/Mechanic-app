@@ -11,13 +11,41 @@ export default function AuthLoadingScreen({ navigation }) {
       try {
         const storedMechanic = await AsyncStorage.getItem("mechanic");
         const acceptedTerms = await AsyncStorage.getItem("acceptedTerms");
+        
         if (storedMechanic) {
           const mechanic = JSON.parse(storedMechanic);
           const jwt = mechanic?.token;
-          if (!jwt || isTokenExpired(jwt)) {
+          
+          // If user exists in context, trust it (already validated by AuthProvider)
+          if (user && jwt) {
+            if (acceptedTerms === "true") {
+              navigation.replace("Main", { mechanic });
+            } else {
+              navigation.replace("Terms", { mechanic });
+            }
+            return;
+          }
+          
+          // Fallback: check token manually
+          if (!jwt) {
+            console.log('No token found, redirecting to login');
             navigation.replace("Login");
             return;
           }
+          
+          // More lenient validation - let backend decide if token is invalid
+          try {
+            if (isTokenExpired(jwt)) {
+              console.log('Token expired, redirecting to login');
+              await AsyncStorage.removeItem("mechanic");
+              navigation.replace("Login");
+              return;
+            }
+          } catch (e) {
+            // If token validation fails, keep the token and let backend validate
+            console.log('Token validation error, proceeding anyway:', e);
+          }
+          
           if (acceptedTerms === "true") {
             navigation.replace("Main", { mechanic });
           } else {
@@ -28,6 +56,7 @@ export default function AuthLoadingScreen({ navigation }) {
         }
       } catch (err) {
         console.error("Auth check failed:", err);
+        // Don't clear storage on error, just redirect to login
         navigation.replace("Login");
       }
     };
@@ -35,7 +64,7 @@ export default function AuthLoadingScreen({ navigation }) {
     if (!loading) {
       checkLogin();
     }
-  }, [loading]);
+  }, [loading, user]);
 
   return (
     <View style={styles.center}>

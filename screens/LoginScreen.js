@@ -45,8 +45,21 @@ export default function LoginScreen({ navigation }) {
         token: data.token || mech.token || null,
       };
 
-      await AsyncStorage.setItem("mechanic", JSON.stringify(mechanicData));
-      await login(mechanicData);
+      console.log('Login successful, saving mechanic data');
+      
+      // Double save to ensure persistence
+      try {
+        await AsyncStorage.setItem("mechanic", JSON.stringify(mechanicData));
+        console.log('Mechanic data saved to AsyncStorage');
+        
+        // Verify it was saved
+        const verify = await AsyncStorage.getItem("mechanic");
+        console.log('Verification - data exists:', !!verify);
+      } catch (storageErr) {
+        console.error('AsyncStorage error:', storageErr);
+      }
+      
+      await login(mechanicData, { fromLogin: true });
 
       Alert.alert(t("Success"), t("Welcome"));
 

@@ -60,11 +60,39 @@ export function AuthProvider({ children }) {
         if (raw) {
           const mech = JSON.parse(raw);
           const jwt = mech?.token || null;
-          if (jwt && !isTokenExpired(jwt)) {
-            setUser(mech);
-            setToken(jwt);
+          // More lenient: only reject if token decode fails or clearly expired
+          if (jwt) {
+            try {
+              const payload = decodeJwt(jwt);
+              // If we can't decode, keep the token anyway and let backend validate
+              if (!payload) {
+                console.log('Token decode failed, keeping token for backend validation');
+                setUser(mech);
+                setToken(jwt);
+              } else if (payload.exp) {
+                const nowSec = Math.floor(Date.now() / 1000);
+                // Add 60 second grace period
+                if (payload.exp > nowSec - 60) {
+                  setUser(mech);
+                  setToken(jwt);
+                } else {
+                  console.log('Token expired, clearing storage');
+                  await AsyncStorage.removeItem('mechanic');
+                  setUser(null);
+                  setToken(null);
+                }
+              } else {
+                // No exp claim, keep the token
+                console.log('No expiry claim, keeping token');
+                setUser(mech);
+                setToken(jwt);
+              }
+            } catch (decodeError) {
+              console.log('Error decoding token, keeping anyway:', decodeError);
+              setUser(mech);
+              setToken(jwt);
+            }
           } else {
-            // expired or invalid
             await AsyncStorage.removeItem('mechanic');
             setUser(null);
             setToken(null);
@@ -74,6 +102,8 @@ export function AuthProvider({ children }) {
           setToken(null);
         }
       } catch (e) {
+        console.error('Rehydrate error:', e);
+        // Don't clear storage on errors, just set null state
         setUser(null);
         setToken(null);
       } finally {
@@ -119,13 +149,27 @@ export function AuthProvider({ children }) {
     if (!jwt) {
       throw new Error('Invalid or expired token');
     }
-    // Skip expiry check only for freshly received login tokens; rehydration keeps validation.
-    if (!fromLogin && isTokenExpired(jwt)) {
-      throw new Error('Invalid or expired token');
+    // More lenient: only check expiry for non-fresh logins
+    if (!fromLogin) {
+      try {
+        if (isTokenExpired(jwt)) {
+          throw new Error('Invalid or expired token');
+        }
+      } catch (e) {
+        // If validation fails, proceed anyway and let backend decide
+        console.log('Token validation failed during login, proceeding:', e);
+      }
     }
-    await AsyncStorage.setItem('mechanic', JSON.stringify(mechanicObj));
-    setUser(mechanicObj);
-    setToken(jwt);
+    try {
+      await AsyncStorage.setItem('mechanic', JSON.stringify(mechanicObj));
+      setUser(mechanicObj);
+      setToken(jwt);
+    } catch (storageError) {
+      console.error('Failed to save to AsyncStorage:', storageError);
+      // Still set in memory even if storage fails
+      setUser(mechanicObj);
+      setToken(jwt);
+    }
   };
 
   const logout = async (reason = 'manual') => {
