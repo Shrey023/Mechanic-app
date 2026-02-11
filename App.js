@@ -25,12 +25,8 @@ import MechanicNavigateScreen from "./screens/MechanicNavigateScreen";
 import MechanicBookingScreen from "./screens/MechanicBookingScreen";
 import AuthLoadingScreen from "./screens/AuthLoadingScreen";
 import TermsScreen from "./screens/TermsScreen";
-import WalletScreen from "./screens/WalletScreen";
-import NavigationScreen from "./screens/NavigationScreen";
 import AnalyticsScreen from "./screens/AnalyticsScreen";
-import MechanicEarningsScreen from "./screens/MechanicEarningsScreen";
 import MechanicSettingsScreen from "./screens/MechanicSettingsScreen";
-import ChatScreen from "./screens/ChatScreen";
 import ChangePasswordScreen from "./screens/ChangePasswordScreen";
 import MechanicRegisterScreen from "./screens/MechanicRegisterScreen";
 
@@ -79,7 +75,6 @@ function BottomTabs({ route }) {
     >
       <Tab.Screen name="Home" component={MechanicDashboard} initialParams={{ mechanic }} />
       <Tab.Screen name="Bookings" component={MechanicBookingScreen} initialParams={{ mechanic }} />
-      <Tab.Screen name="Earnings" component={MechanicEarningsScreen} initialParams={{ mechanic }} />
       <Tab.Screen name="Profile" component={MechanicProfileScreen} initialParams={{ mechanic }} />
       <Tab.Screen name="Settings" component={MechanicSettingsScreen} initialParams={{ mechanic }} />
     </Tab.Navigator>
@@ -129,12 +124,8 @@ function AppWrapper() {
         <Stack.Screen name="Main" component={BottomTabs} />
         <Stack.Screen name="AuthLoading" component={AuthLoadingScreen} />
         <Stack.Screen name="Navigate" component={MechanicNavigateScreen} />
-        <Stack.Screen name="ChatScreen" component={ChatScreen} />
         <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
         <Stack.Screen name="Terms" component={TermsScreen} />
-        <Stack.Screen name="WalletScreen" component={WalletScreen} />
-<Stack.Screen name="NavigationScreen" component={NavigationScreen} />
-<Stack.Screen name="AnalyticsScreen" component={AnalyticsScreen} />
         <Stack.Screen name="Register" component={MechanicRegisterScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>

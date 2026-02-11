@@ -240,31 +240,7 @@ export default function MechanicDashboard({ route, navigation }) {
             styles.quickButton,
             { backgroundColor: isDarkMode ? "#2a2a2a" : "#f2f2f2" },
           ]}
-          onPress={() => navigation.navigate("NavigationScreen")}
-        >
-          <Text style={{ color: isDarkMode ? "#fff" : "#000" }}>
-            🧭 Navigation
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[
-            styles.quickButton,
-            { backgroundColor: isDarkMode ? "#2a2a2a" : "#f2f2f2" },
-          ]}
-          onPress={() => navigation.navigate("WalletScreen")}
-        >
-          <Text style={{ color: isDarkMode ? "#fff" : "#000" }}>
-            💼 Wallet
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[
-            styles.quickButton,
-            { backgroundColor: isDarkMode ? "#2a2a2a" : "#f2f2f2" },
-          ]}
-          onPress={() => navigation.navigate("AnalyticsScreen")}
+          onPress={() => navigation.navigate("Analytics")}
         >
           <Text style={{ color: isDarkMode ? "#fff" : "#000" }}>
             📈 Analytics

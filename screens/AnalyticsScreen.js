@@ -73,9 +73,6 @@ export default function AnalyticsScreen() {
         </Text>
       </View>
 
-      <Text style={[styles.note, { color: isDark ? "#aaa" : "#555" }]}>
-        More detailed charts & performance metrics coming soon!
-      </Text>
     </ScrollView>
   );
 }

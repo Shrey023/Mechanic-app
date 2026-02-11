@@ -60,22 +60,6 @@ export default function MechanicEarningsScreen({ route }) {
         Earnings
       </Text>
 
-      <View
-        style={[
-          styles.card,
-          { backgroundColor: isDarkMode ? '#111' : '#F3F3F3' },
-        ]}
-      >
-        <Text style={[styles.totalText, { color: isDarkMode ? '#ccc' : '#333' }]}>
-          Total Earnings
-        </Text>
-        <Text
-          style={[styles.totalAmount, { color: isDarkMode ? '#fff' : '#000' }]}
-        >
-          Coming Soon
-        </Text>
-      </View>
-
       <Text style={[styles.subHeading, { color: isDarkMode ? '#fff' : '#000' }]}>Platform Fees</Text>
       <View
         style={[
@@ -93,17 +77,11 @@ export default function MechanicEarningsScreen({ route }) {
           </Text>
         </View>
 
-        <TouchableOpacity style={styles.payDisabled} disabled>
-          <Text style={styles.payDisabledText}>Pay Now (Coming Soon)</Text>
-        </TouchableOpacity>
-
         {platformFeesLoading ? (
           <Text style={[styles.platformHint, { color: isDarkMode ? '#888' : '#666' }]}>Loading platform fees…</Text>
         ) : platformFeesError ? (
           <Text style={[styles.platformHint, { color: isDarkMode ? '#888' : '#666' }]}>Platform fees unavailable</Text>
-        ) : (
-          <Text style={[styles.platformHint, { color: isDarkMode ? '#888' : '#666' }]}>Payment integration coming soon</Text>
-        )}
+        ) : null}
       </View>
     </ScrollView>
   );

@@ -7,11 +7,11 @@ import {
   TouchableOpacity,
   Alert,
   Switch,
+  Linking,
 } from 'react-native';
 import {
   Ionicons,
   Feather,
-  MaterialIcons,
   Entypo,
 } from '@expo/vector-icons';
 import { useTheme } from '../ThemeContext';
@@ -33,6 +33,10 @@ export default function MechanicSettingsScreen({ navigation, route }) {
     ]);
   };
 
+  const handleContactSupport = () => {
+    Linking.openURL('mailto:support@mechze.com?subject=Support Request – Mechanic App');
+  };
+
   const styles = getStyles(isDark);
 
   return (
@@ -48,46 +52,18 @@ export default function MechanicSettingsScreen({ navigation, route }) {
           <View style={{ flex: 1 }} />
           <Switch value={isDark} onValueChange={toggleTheme} />
         </View>
-
-        <TouchableOpacity style={styles.option}>
-          <Ionicons name="language-outline" size={20} color={styles.iconColor.color} />
-          <Text style={styles.optionText}>Language</Text>
-        </TouchableOpacity>
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Support</Text>
 
-        <TouchableOpacity style={styles.option}>
-          <Ionicons name="help-circle-outline" size={20} color={styles.iconColor.color} />
-          <Text style={styles.optionText}>Help & FAQs</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.option}>
+        <TouchableOpacity style={styles.option} onPress={handleContactSupport}>
           <Feather name="mail" size={20} color={styles.iconColor.color} />
           <Text style={styles.optionText}>Contact Support</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Account</Text>
-
-        <TouchableOpacity
-          style={styles.option}
-          onPress={() => navigation.navigate('PlatformFees')}
-        >
-          <MaterialIcons name="receipt-long" size={20} color={styles.iconColor.color} />
-          <Text style={styles.optionText}>Platform Fees</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.option}
-          onPress={() => navigation.navigate('ChangePassword', { mechanic })}
-        >
-          <MaterialIcons name="security" size={20} color={styles.iconColor.color} />
-          <Text style={styles.optionText}>Change Password</Text>
-        </TouchableOpacity>
-
         <TouchableOpacity style={styles.option} onPress={handleLogout}>
           <Entypo name="log-out" size={20} color="#d9534f" />
           <Text style={[styles.optionText, { color: '#d9534f' }]}>Logout</Text>

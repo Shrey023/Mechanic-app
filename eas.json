@@ -1,7 +1,7 @@
 {
   "cli": {
     "version": ">= 3.13.1",
-    "appVersionSource": "remote"
+    "appVersionSource": "local"
   },
   "build": {
     "preview": {
@@ -14,12 +14,13 @@
     },
     "production": {
       "android": {
-        "buildType": "app-bundle"
+        "buildType": "app-bundle",
+        "gradleCommand": ":app:bundleRelease"
       },
       "env": {
         "EXPO_PUBLIC_API_URL": "https://mechtrix.onrender.com/api"
       },
-      "autoIncrement": true
+      "autoIncrement": false
     }
   },
   "submit": {

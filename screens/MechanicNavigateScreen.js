@@ -19,7 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 let locationWatcher = null;
 
 export default function MechanicNavigateScreen({ route, navigation }) {
-  const { booking } = route.params;
+  const { booking } = route?.params || {};
   const { theme } = useTheme();
   const isDarkMode = theme === 'dark';
 
@@ -27,6 +27,24 @@ export default function MechanicNavigateScreen({ route, navigation }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [polylineCoords, setPolylineCoords] = useState([]);
   const [mechanic, setMechanic] = useState(null);
+
+  // Defensive check for missing booking
+  if (!booking) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+        <Text style={{ fontSize: 18, color: '#d9534f', marginBottom: 10 }}>⚠️ Error</Text>
+        <Text style={{ fontSize: 16, textAlign: 'center', marginBottom: 20 }}>
+          No booking information provided
+        </Text>
+        <TouchableOpacity
+          style={{ backgroundColor: '#007BFF', padding: 12, borderRadius: 8 }}
+          onPress={() => navigation.goBack()}
+        >
+          <Text style={{ color: '#fff', fontWeight: 'bold' }}>Go Back</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   useEffect(() => {
     const loadMechanic = async () => {
@@ -169,20 +187,11 @@ export default function MechanicNavigateScreen({ route, navigation }) {
     }
   };
 
-  const handleCall = () => {
-    booking?.customerPhone
-      ? Linking.openURL(`tel:${booking.customerPhone}`)
-      : Alert.alert('No phone number provided');
-  };
-
-  const handleChat = () => {
-    booking?.customerId
-      ? navigation.navigate('ChatScreen', {
-          bookingId: booking._id,
-          customerId: booking.customerId,
-        })
-      : Alert.alert('Error', 'No customer ID found');
-  };
+  // const handleCall = () => {
+  //   booking?.customerPhone
+  //     ? Linking.openURL(`tel:${booking.customerPhone}`)
+  //     : Alert.alert('No phone number provided');
+  // };
 
   const openInGoogleMaps = () => {
     if (currentLocation && customerCoords) {
@@ -324,14 +333,11 @@ export default function MechanicNavigateScreen({ route, navigation }) {
             Earning: ₹{booking.estimatedEarnings || 0}
           </Text>
 
-          <View style={styles.contactRow}>
+          {/* <View style={styles.contactRow}>
             <TouchableOpacity style={styles.contactButton} onPress={handleCall}>
               <Text style={styles.contactButtonText}>Call</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.contactButton} onPress={handleChat}>
-              <Text style={styles.contactButtonText}>Chat</Text>
-            </TouchableOpacity>
-          </View>
+          </View> */}
 
           <TouchableOpacity
             style={[
