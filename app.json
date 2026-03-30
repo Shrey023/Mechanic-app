@@ -32,7 +32,7 @@
       ],
       "config": {
         "googleMaps": {
-          "apiKey": "REMOVED_GOOGLE_MAPS_KEY"
+          "apiKey": ""
         }
       }
     },
@@ -44,7 +44,7 @@
     ],
     "extra": {
       "API_URL": "https://mechtrix.onrender.com/api",
-      "GOOGLE_MAPS_KEY": "REMOVED_GOOGLE_MAPS_KEY",
+      "GOOGLE_MAPS_KEY": "",
       "eas": {
         "projectId": "0f2ca1fc-fe3b-46c2-9105-86b2158d12cc"
       }
